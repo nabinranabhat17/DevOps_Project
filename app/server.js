@@ -44,6 +44,8 @@ app.get('/', (req, res) => {
         h1{color:#2d6cdf;margin-bottom:0.25rem}
         p{font-size:1.1rem;line-height:1.5}
         .build-marker{display:inline-block;margin:1rem 0;padding:0.75rem 1rem;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:10px;font-weight:700}
+        .info-section{margin-top:2rem;padding:1rem;border-left:4px solid #2d6cdf;background:#f0f9ff}
+        .info-row{margin:0.5rem 0;font-size:1rem}
       </style>
     </head>
     <body>
@@ -51,6 +53,12 @@ app.get('/', (req, res) => {
       <div class="build-marker">Built by Jenkins, version ${VERSION}</div>
       <p><strong>Version:</strong> ${VERSION}</p>
       <p><strong>Hostname:</strong> ${hostname}</p>
+      
+      <div class="info-section">
+        <h3 style="color:#2d6cdf;margin-top:0">Project Information</h3>
+        <div class="info-row"><strong>Completed by:</strong> Nabin Ranabhat (078bct050)</div>
+        <div class="info-row"><strong>Presented to:</strong> Sanjay Upreti (DevOps Fundamentals)</div>
+      </div>
     </body>
   </html>`);
 });
