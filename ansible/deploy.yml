@@ -7,14 +7,14 @@
   vars:
     image_repo: "nabinrb2787/devops-demo-app"
     image_tag: "{{ image_tag | default('latest') }}"
-    image_source: "{{ image_source | default('pull') }}"
+    image_pull_source: "{{ image_source | default('pull', true) }}"
     image_ref: "{{ image_repo }}:{{ image_tag }}"
 
   tasks:
     - name: Pull image from Docker Hub
       community.docker.docker_image:
         name: "{{ image_ref }}"
-        source: "{{ image_source }}"
+        source: "{{ image_pull_source }}"
 
     - name: Stop and remove existing container (if any)
       community.docker.docker_container:
