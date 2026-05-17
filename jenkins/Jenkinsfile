@@ -1,0 +1,79 @@
+pipeline {
+  agent any
+  environment {
+    IMAGE_NAME = 'nabinrb/devops-demo-app'
+    IMAGE_TAG  = "${env.BUILD_NUMBER}"
+    CONTAINER_NAME = 'devops-demo-app'
+    APP_PORT = '3000'
+  }
+  options { timeout(time: 5, unit: 'MINUTES') }
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build --pull -t ${IMAGE_NAME}:${IMAGE_TAG} --build-arg VERSION=${IMAGE_TAG} app'
+        sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest'
+      }
+    }
+
+    stage('Run Tests') {
+      steps {
+        sh '''
+          set -eu
+          docker rm -f smoke-test-${BUILD_NUMBER} >/dev/null 2>&1 || true
+          docker run -d --name smoke-test-${BUILD_NUMBER} -p 3000:3000 ${IMAGE_NAME}:${IMAGE_TAG}
+          for i in 1 2 3 4 5; do
+            if curl -fsS http://localhost:3000/health >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://localhost:3000/health
+          curl -fsS http://localhost:3000/metrics >/dev/null
+          docker rm -f smoke-test-${BUILD_NUMBER}
+        '''
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+          sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
+          sh 'docker push ${IMAGE_NAME}:${IMAGE_TAG}'
+          sh 'docker push ${IMAGE_NAME}:latest'
+        }
+      }
+    }
+
+    stage('Deploy with Ansible') {
+      steps {
+        sh "ansible-galaxy collection install -r ansible/requirements.yml || true"
+        sh "ansible-playbook -i ansible/inventory.ini ansible/deploy.yml -e image_tag=${IMAGE_TAG}"
+      }
+    }
+
+    stage('Health Check') {
+      steps {
+        sh "for i in 1 2 3 4 5; do curl -sSf http://localhost:${APP_PORT}/health && break || sleep 3; done"
+      }
+    }
+
+    stage('Cleanup') {
+      steps {
+        sh '''
+          set +e
+          docker image prune -f
+          docker images ${IMAGE_NAME} --format '{{.Repository}}:{{.Tag}} {{.CreatedAt}}' | sort -r | tail -n +4 | awk '{print $1}' | xargs -r docker rmi -f
+        '''
+      }
+    }
+  }
+  post {
+    success { echo "Deployment successful — Build #${env.BUILD_NUMBER}" }
+    failure { echo "Pipeline failed — check logs" }
+    always { cleanWs() }
+  }
+}

@@ -1,0 +1,46 @@
+---
+# Ansible playbook to deploy the devops-demo-app from Docker Hub
+# Usage: ansible-playbook -i inventory.ini deploy.yml -e image_tag=123
+
+- hosts: local
+  gather_facts: false
+  vars:
+    image_repo: "nabinrb/devops-demo-app"
+    image_tag: "{{ image_tag | default('latest') }}"
+    image_source: "{{ image_source | default('pull') }}"
+    image_ref: "{{ image_repo }}:{{ image_tag }}"
+
+  tasks:
+    - name: Pull image from Docker Hub
+      community.docker.docker_image:
+        name: "{{ image_ref }}"
+        source: "{{ image_source }}"
+
+    - name: Stop and remove existing container (if any)
+      community.docker.docker_container:
+        name: devops-demo-app
+        state: absent
+      ignore_errors: yes
+
+    - name: Run container
+      community.docker.docker_container:
+        name: devops-demo-app
+        image: "{{ image_ref }}"
+        state: started
+        restart_policy: always
+        published_ports:
+          - "3000:3000"
+        env:
+          VERSION: "{{ image_tag }}"
+
+    - name: Wait for application health endpoint
+      ansible.builtin.uri:
+        url: http://localhost:3000/health
+        status_code: 200
+      register: health_check
+      retries: 5
+      delay: 3
+
+    - name: Print deployed container info
+      ansible.builtin.debug:
+        msg: "Deployed {{ image_repo }}:{{ image_tag }}"
