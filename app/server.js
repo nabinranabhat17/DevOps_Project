@@ -88,7 +88,7 @@ app.get('/', (req, res) => {
           <div class="stack">
             <h3 class="section-title">Project Information</h3>
             <div class="info-row"><span>Completed by</span><span>Sagar Giri (078BCT071)</span></div>
-            <div class="info-row"><span>Presented to</span><span>Sanjay Upreti (DevOps Fundamentals)</span></div>
+            <div class="info-row"><span>Presented to</span><span>Sanjaya Subedi (DevOps Fundamentals)</span></div>
             <div class="info-row"><span>Repository username</span><span>oceangiri</span></div>
           </div>
         </section>
