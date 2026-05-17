@@ -4,7 +4,7 @@ pipeline {
     pollSCM('H/1 * * * *')
   }
   environment {
-    IMAGE_NAME = 'nabinrb/devops-demo-app'
+    IMAGE_NAME = 'nabinrb2787/devops-demo-app'
     IMAGE_TAG  = "${env.BUILD_NUMBER}"
     CONTAINER_NAME = 'devops-demo-app'
     APP_PORT = '3000'

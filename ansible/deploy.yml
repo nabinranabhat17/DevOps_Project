@@ -5,7 +5,7 @@
 - hosts: local
   gather_facts: false
   vars:
-    image_repo: "nabinrb/devops-demo-app"
+    image_repo: "nabinrb2787/devops-demo-app"
     image_tag: "{{ image_tag | default('latest') }}"
     image_source: "{{ image_source | default('pull') }}"
     image_ref: "{{ image_repo }}:{{ image_tag }}"
