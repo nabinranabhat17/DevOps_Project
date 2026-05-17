@@ -27,4 +27,12 @@ ansible-galaxy collection install -r ansible/requirements.yml
 ansible-playbook -i ansible/inventory.ini ansible/deploy.yml -e image_tag=latest
 ```
 
-Next steps: configure Jenkins container and create a Pipeline job pointing to this repository. See `jenkins/Jenkinsfile` for pipeline stages.
+4. Enable the local Git hook that pushes to GitHub and triggers Jenkins after every commit:
+
+```bash
+./scripts/setup-git-hooks.sh
+```
+
+The hook in `.githooks/post-commit` will push the current branch to `origin`, and Jenkins will rebuild on its next SCM poll because `jenkins/Jenkinsfile` enables `pollSCM('H/1 * * * *')`.
+
+Next steps: ensure Jenkins has access to this repository and reload the job so it reads `jenkins/Jenkinsfile` from GitHub. See `jenkins/Jenkinsfile` for pipeline stages.

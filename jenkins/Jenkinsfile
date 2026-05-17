@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  triggers {
+    pollSCM('H/1 * * * *')
+  }
   environment {
     IMAGE_NAME = 'nabinrb/devops-demo-app'
     IMAGE_TAG  = "${env.BUILD_NUMBER}"
@@ -24,15 +27,15 @@ pipeline {
         sh '''
           set -eu
           docker rm -f smoke-test-${BUILD_NUMBER} >/dev/null 2>&1 || true
-          docker run -d --name smoke-test-${BUILD_NUMBER} -p 3000:3000 ${IMAGE_NAME}:${IMAGE_TAG}
+          docker run -d --name smoke-test-${BUILD_NUMBER} ${IMAGE_NAME}:${IMAGE_TAG}
           for i in 1 2 3 4 5; do
-            if curl -fsS http://localhost:3000/health >/dev/null; then
+            if docker exec smoke-test-${BUILD_NUMBER} wget -qO- http://127.0.0.1:3000/health >/dev/null; then
               break
             fi
             sleep 2
           done
-          curl -fsS http://localhost:3000/health
-          curl -fsS http://localhost:3000/metrics >/dev/null
+          docker exec smoke-test-${BUILD_NUMBER} wget -qO- http://127.0.0.1:3000/health
+          docker exec smoke-test-${BUILD_NUMBER} wget -qO- http://127.0.0.1:3000/metrics >/dev/null
           docker rm -f smoke-test-${BUILD_NUMBER}
         '''
       }

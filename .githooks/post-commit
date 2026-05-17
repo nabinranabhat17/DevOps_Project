@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+branch="$(git rev-parse --abbrev-ref HEAD)"
+remote_name="${GIT_REMOTE_NAME:-origin}"
+
+if [[ -z "${branch}" || "${branch}" == "HEAD" ]]; then
+  exit 0
+fi
+
+git -C "${repo_root}" push "${remote_name}" "${branch}"
+echo "[post-commit] Pushed ${branch} to ${remote_name}; Jenkins will pick up the change on its next SCM poll."
