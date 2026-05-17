@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
             </div>
             <div class="card">
               <span class="label">Username</span>
-              <div class="value">oceangiri</div>
+              <div class="value">nabinrb</div>
             </div>
             <div class="card">
               <span class="label">Project</span>
@@ -89,7 +89,7 @@ app.get('/', (req, res) => {
             <h3 class="section-title">Project Information</h3>
             <div class="info-row"><span>Completed by</span><span>Nabin Ranabhat (078BCT050)</span></div>
             <div class="info-row"><span>Presented to</span><span>Sanjaya Subedi (DevOps Fundamentals)</span></div>
-            <div class="info-row"><span>Repository username</span><span>oceangiri</span></div>
+            <div class="info-row"><span>Repository username</span><span>nabinrb</span></div>
           </div>
         </section>
       </div>
