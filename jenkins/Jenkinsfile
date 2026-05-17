@@ -60,7 +60,16 @@ pipeline {
 
     stage('Health Check') {
       steps {
-        sh "for i in 1 2 3 4 5; do curl -sSf http://localhost:${APP_PORT}/health && break || sleep 3; done"
+        sh '''
+          set -eu
+          for i in 1 2 3 4 5; do
+            if docker exec devops-demo-app wget -qO- http://127.0.0.1:3000/health >/dev/null; then
+              break
+            fi
+            sleep 3
+          done
+          docker exec devops-demo-app wget -qO- http://127.0.0.1:3000/health
+        '''
       }
     }
 

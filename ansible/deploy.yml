@@ -34,12 +34,12 @@
           VERSION: "{{ image_tag }}"
 
     - name: Wait for application health endpoint
-      ansible.builtin.uri:
-        url: http://localhost:3000/health
-        status_code: 200
+      ansible.builtin.command: docker exec devops-demo-app wget -qO- http://127.0.0.1:3000/health
       register: health_check
       retries: 5
       delay: 3
+      until: health_check.rc == 0
+      changed_when: false
 
     - name: Print deployed container info
       ansible.builtin.debug:
