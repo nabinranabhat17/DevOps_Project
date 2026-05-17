@@ -39,10 +39,16 @@ app.get('/', (req, res) => {
     <head>
       <meta charset="utf-8" />
       <title>DevOps Demo App</title>
-      <style>body{font-family:Arial,Helvetica,sans-serif;margin:40px}h1{color:#2d6cdf}p{font-size:1.1rem}</style>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;margin:40px;background:#f7f8fc;color:#1f2937}
+        h1{color:#2d6cdf;margin-bottom:0.25rem}
+        p{font-size:1.1rem;line-height:1.5}
+        .build-marker{display:inline-block;margin:1rem 0;padding:0.75rem 1rem;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:10px;font-weight:700}
+      </style>
     </head>
     <body>
       <h1>DevOps Demo App</h1>
+      <div class="build-marker">Built by Jenkins, version ${VERSION}</div>
       <p><strong>Version:</strong> ${VERSION}</p>
       <p><strong>Hostname:</strong> ${hostname}</p>
     </body>
